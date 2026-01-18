@@ -1,66 +1,257 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+    <img src="https://skillicons.dev/icons?i=laravel" height="80" alt="laravel logo"  />
+    <img width="20" />
+    <img src="https://skillicons.dev/icons?i=react" height="80" alt="react logo"  />
+    <img width="20" />
+    <img src="https://skillicons.dev/icons?i=next" height="80" alt="react logo"  />
 </p>
 
-## About Laravel
+## CRUD - Laravel, Inertia, NextJS, Shadcn UI without Restfull API
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🛠️ Tech Stack / Framework
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Laravel** – Backend
+- **PHP** – Server-side
+- **Inertia.js** – Bridg
+- **NextJS** – Frontend
+- **TypeScript** – Type Safety
+- **ShadCN UI** – UI Components
+- **Tailwind CSS** – Utility-first CSS
+- **Tailark** – Libary Template UI
+- **MySQL** – Database Management System
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+#### # Installation Project
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+##### not a cloning, this is tutorial step from zero
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Gunakan terminal di vscode atau lokal:
 
-## Laravel Sponsors
+```bash
+composer create-project laravel/laravel:^11 .
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+<br>
 
-### Premium Partners
+##### Custom your database
+```bash
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=<your database name>
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+<br>
 
-## Contributing
+```bash
+composer require laravel/breeze --dev
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+php artisan breeze:install react --typescript
+```
 
-## Code of Conduct
+```bash
+npm i
+npm i -D tailwindcss postcss autoprefixer
+npx shadcn@latest init
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+php artisan make:model LoremIpsum -mc
+```
 
-## Security Vulnerabilities
+```bash
+php artisan storage:link
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+<br>
 
-## License
+change _Register User/Role Permisson_
+open _app/Http/Controllers/Auth/RegisteredUserController.php_
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+public function store(Request $request): RedirectResponse
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+        'password' => ['required', 'confirmed', Rules\Password::defaults()],
+    ]);
+
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'role' => 'user', // Tambahkan ini - semua registrasi default user
+    ]);
+
+    event(new Registered($user));
+
+    Auth::login($user);
+
+    return redirect(route('dashboard', absolute: false));
+}
+```
+
+<br>
+
+create _Role Permission Middleware_
+
+```bash
+php artisan make:middleware RolePermission
+```
+
+```bash
+    public function handle(Request $request, Closure $next): Response
+    {
+        if (Auth::check()) {
+            $user = Auth::user();
+
+            // Jika admin, redirect ke admin dashboard
+            if ($user->role === 'admin' && $request->route()->getName() === 'dashboard') {
+                return redirect()->route('admin.dashboard');
+            }
+
+            // Jika user biasa, redirect ke user dashboard
+            if ($user->role === 'user' && $request->route()->getName() === 'dashboard') {
+                return redirect()->route('user.dashboard');
+            }
+        }
+
+        return $next($request);
+    }
+```
+
+<br>
+
+create _DashboardController_
+
+```bash
+php artisan make:controller DashboardController
+```
+
+```bash
+    public function admin()
+    {
+        $totalProducts = Product::count();
+
+        return Inertia::render('Admin/Dashboard', [
+            'totalProducts' => $totalProducts
+        ]);
+    }
+
+    public function user()
+    {
+        $products = Product::latest()->get();
+
+        return Inertia::render('User/Dashboard', [
+            'products' => $products
+        ]);
+    }
+```
+
+<br>
+
+change _Route Web_
+
+```bash
+// Route default dashboard (akan redirect sesuai role)
+    Route::get('/dashboard', function() {
+        $user = auth()->user();
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+        return redirect()->route('user.dashboard');
+    })->name('dashboard');
+```
+
+```bash
+// role->admin
+Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'admin'])->name('admin.dashboard');
+
+    // CRUD Products
+    Route::resource('products', ProductController::class);
+});
+
+// role->user
+Route::middleware(['auth', 'verified'])->prefix('user')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'user'])->name('user.dashboard');
+});
+```
+<br>
+
+#### File Structure Akhir
+
+```
+your_project/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── DashboardController.php
+│   │   └── Middleware/
+│   │       └── RolePermission.php
+│   └── Models/
+│       └── User.php
+├── resources/
+│   └── js/
+│       ├── Pages/
+│       │   ├── Index.tsx
+│       │   ├── Admin/
+│       │   │   ├── Dashboard.tsx
+│       │   └── User/
+│       │       └── Dashboard.tsx
+│       └── components/
+│           └── ui/
+│               ├── button.tsx
+│               ├── card.tsx
+│               ├── input.tsx
+│               └── ...
+├── routes/
+│   └── web.php
+└── storage/
+    └── app/
+        └── public/
+```
+<br>
+
+#### Note
+untuk lebih dalam memahami Logic CRUD di Controller, open ProductController in Repo Github here, di sana sudah di sediakan logic CRUD dengan code dibuat sederhana, hingga mudah untuk di pahami dan di kembangkan.
+
+dan Selalu perhatikan struktur folder seperti Admin/Products agar sesuai dengan route Web yang ada di repo project ini, disesuaikan saja dengan kebutuhan anda.
+
+<br>
+
+Running the Project
+
+```bash
+npm run dev
+```
+```bash
+php artisan serve
+```
+<br>
+
+### Lisensi
+Project ini dilisensikan di bawah [MIT license](https://opensource.org/licenses/MIT).
+
+Anda diperbolehkan untuk menggunakan, menyalin, dan memodifikasi proyek ini sesuai dengan ketentuan lisensi tersebut.
+
+Namun, dilarang keras untuk:
+
+- Mengklaim proyek atau aset sebagai milik pribadi tanpa atribusi yang semestinya;
+
+- Memperjualbelikan aset proyek ini secara langsung maupun tidak langsung;
+
+- Menyalahgunakan aset proyek untuk tujuan yang melanggar hukum atau merugikan pihak lain.
+
+Setiap bentuk pelanggaran terhadap ketentuan di atas dapat dikenakan tindakan hukum sesuai dengan peraturan perundang-undangan yang berlaku. 
+<br>
+
+**BIJAK DALAM BERKARYA!**
