@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Product;
+use GuzzleHttp\Handler\Proxy;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -40,5 +41,9 @@ class ProductController extends Controller
         }
         Product::create($data);
         return redirect()->route('products.index')->with('success', 'Product Created Successfully');
+    }
+
+    public function edit(Product $product) {
+        return Inertia::render('Admin/Products/Edit', compact('product'));
     }
 }
