@@ -41,7 +41,7 @@ class ProductController extends Controller
             $data['image'] = $imagePath;
         }
         Product::create($data);
-        return redirect()->route('products.index')->with('success', 'Product Created Successfully');
+        return redirect()->route('products.index')->with('success', 'Product Berhasil di tambahkan!');
     }
 
     public function edit(Product $product) {
@@ -72,6 +72,14 @@ class ProductController extends Controller
         }
 
         $product->update($data);
-        return redirect()->route('products.index')->with('success', 'Product Created Successfully');
+        return redirect()->route('products.index')->with('success', 'Product berhasil di update! 🥳');
+    }
+
+    public function destroy(Product $product) {
+        if ($product->image) {
+            Storage::disk('public')->delete($product->image);
+        }
+        $product->delete();
+        return redirect()->route('products.index')->with('success', 'Product berhasil di hapus! 🥳');
     }
 }
