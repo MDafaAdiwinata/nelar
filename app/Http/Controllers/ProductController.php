@@ -12,4 +12,8 @@ class ProductController extends Controller
         $products = Product::latest()->get();
         return Inertia::render('Admin/Products/Index', compact('products'));
     }
+
+    public function create() {
+        return Inertia::render('Admin/Products/Create');
+    }
 }
